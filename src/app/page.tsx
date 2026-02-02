@@ -189,9 +189,16 @@ export default function Home() {
       <main className="min-h-screen">
         <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50">
-              Data-Tracker
-            </h1>
+            <img
+              src="/logo-compact.svg"
+              alt="Feedboard"
+              className="h-8 dark:hidden"
+            />
+            <img
+              src="/logo-dark.svg"
+              alt="Feedboard"
+              className="h-8 hidden dark:block"
+            />
             <ThemeToggle />
           </div>
         </header>
@@ -208,9 +215,16 @@ export default function Home() {
       <main className="min-h-screen">
         <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50">
-              Data-Tracker
-            </h1>
+            <img
+              src="/logo-compact.svg"
+              alt="Feedboard"
+              className="h-8 dark:hidden"
+            />
+            <img
+              src="/logo-dark.svg"
+              alt="Feedboard"
+              className="h-8 hidden dark:block"
+            />
             <ThemeToggle />
           </div>
         </header>
@@ -226,15 +240,22 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50">
-            Data-Tracker
-          </h1>
+          <img
+            src="/logo-compact.svg"
+            alt="Feedboard"
+            className="h-8 dark:hidden"
+          />
+          <img
+            src="/logo-dark.svg"
+            alt="Feedboard"
+            className="h-8 hidden dark:block"
+          />
           <div className="flex items-center gap-2">
             {!showVault && (
               <button
                 onClick={handleRefresh}
                 disabled={isLoading || !selectedTopic}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               >
                 <svg
                   className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
@@ -254,19 +275,23 @@ export default function Home() {
             )}
             <button
               onClick={() => setShowVault(!showVault)}
-              className={`relative p-2 rounded-lg transition-all ${
+              className={`relative px-3 py-2 rounded-lg transition-all flex items-center gap-2 ${
                 showVault
-                  ? "bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400"
-                  : "text-slate-500 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-amber-500 text-white"
+                  : "bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900"
               }`}
-              title={showVault ? "Back to Feeds" : "Open Vault"}
             >
-              <svg className="w-5 h-5" fill={showVault ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-4 h-4" fill={showVault ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
-              {vaultItems.length > 0 && !showVault && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {vaultItems.length > 9 ? "9+" : vaultItems.length}
+              <span className="font-medium">Vault</span>
+              {vaultItems.length > 0 && (
+                <span className={`px-1.5 py-0.5 text-xs font-bold rounded-full ${
+                  showVault
+                    ? "bg-white/20 text-white"
+                    : "bg-amber-500 text-white"
+                }`}>
+                  {vaultItems.length}
                 </span>
               )}
             </button>
@@ -356,26 +381,26 @@ export default function Home() {
                   onClick={() => setActiveTab("news")}
                   className={`px-4 py-2 font-medium transition-colors relative ${
                     activeTab === "news"
-                      ? "text-blue-600 dark:text-blue-400"
+                      ? "text-cyan-600 dark:text-cyan-400"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                   }`}
                 >
                   News
                   {activeTab === "news" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-600 dark:bg-cyan-400" />
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab("reddit")}
                   className={`px-4 py-2 font-medium transition-colors relative ${
                     activeTab === "reddit"
-                      ? "text-orange-600 dark:text-orange-400"
+                      ? "text-cyan-600 dark:text-cyan-400"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                   }`}
                 >
                   Reddit
                   {activeTab === "reddit" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600 dark:bg-orange-400" />
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-600 dark:bg-cyan-400" />
                   )}
                 </button>
               </div>

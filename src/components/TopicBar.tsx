@@ -86,7 +86,7 @@ export function TopicBar({
               setError(null);
             }}
             disabled={topics.length >= 20}
-            className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1.5 text-sm font-medium text-cyan-600 dark:text-cyan-400 border-2 border-dashed border-cyan-300 dark:border-cyan-600 rounded-full hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             + Add Topic
           </button>
@@ -101,12 +101,12 @@ export function TopicBar({
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Enter topic..."
               autoFocus
-              className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-full bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-full bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
             <button
               type="submit"
               disabled={!inputValue.trim()}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 disabled:opacity-50"
+              className="px-3 py-1.5 text-sm font-medium text-white bg-cyan-600 rounded-full hover:bg-cyan-700 disabled:opacity-50"
             >
               Add
             </button>
@@ -134,12 +134,12 @@ export function TopicBar({
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   autoFocus
-                  className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-full bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-full bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 />
                 <button
                   type="submit"
                   disabled={!inputValue.trim()}
-                  className="px-2 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50"
+                  className="px-2 py-1 text-xs font-medium text-white bg-cyan-600 rounded hover:bg-cyan-700 disabled:opacity-50"
                 >
                   Save
                 </button>
@@ -156,7 +156,7 @@ export function TopicBar({
                 onClick={() => onSelect(topic.id)}
                 className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${
                   selectedTopicId === topic.id
-                    ? "bg-blue-600 text-white shadow-md"
+                    ? "bg-cyan-600 text-white shadow-md"
                     : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
               >

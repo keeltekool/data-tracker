@@ -36,7 +36,7 @@ export function EmptyState({ onAddTopic }: EmptyStateProps) {
         </svg>
       </div>
       <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-50 mb-2">
-        Welcome to Data-Tracker
+        Welcome to Feedboard
       </h3>
       <p className="text-slate-500 dark:text-slate-400 text-center max-w-md mb-6">
         Track any topic across News and Reddit. Add your first topic to get started.
@@ -48,12 +48,12 @@ export function EmptyState({ onAddTopic }: EmptyStateProps) {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Enter a topic (e.g., PYPL, Bitcoin, AI)"
-          className="flex-1 px-4 py-3 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-3 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500"
         />
         <button
           type="submit"
           disabled={!inputValue.trim() || isSubmitting}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? "Adding..." : "Add Topic"}
         </button>

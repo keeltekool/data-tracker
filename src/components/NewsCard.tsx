@@ -62,7 +62,7 @@ export function NewsCard({ item, isRead, onRead, isInVault, onSaveToVault }: New
       className={`group cursor-pointer p-4 sm:p-5 rounded-xl border transition-all hover:shadow-md ${
         isRead
           ? "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800"
-          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-600"
+          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-cyan-300 dark:hover:border-cyan-600"
       }`}
     >
       <div className="flex gap-4">
@@ -80,14 +80,14 @@ export function NewsCard({ item, isRead, onRead, isInVault, onSaveToVault }: New
         </div>
         <div className="flex-1 min-w-0">
           <h3
-            className={`font-semibold line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors ${
+            className={`font-semibold line-clamp-2 mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors ${
               isRead ? "text-slate-500 dark:text-slate-400" : "text-slate-900 dark:text-slate-50"
             }`}
           >
             {item.title}
           </h3>
           <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <span className="truncate font-medium text-blue-600 dark:text-blue-400">{item.source}</span>
+            <span className="truncate font-medium text-cyan-600 dark:text-cyan-400">{item.source}</span>
             <span>·</span>
             <span className="flex-shrink-0">{timeAgo}</span>
           </div>

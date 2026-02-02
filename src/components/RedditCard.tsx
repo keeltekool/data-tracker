@@ -38,13 +38,13 @@ export function RedditCard({ item, isRead, onRead, isInVault, onSaveToVault }: R
       className={`group cursor-pointer p-4 sm:p-5 rounded-xl border transition-all hover:shadow-md ${
         isRead
           ? "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800"
-          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-orange-300 dark:hover:border-orange-600"
+          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-cyan-300 dark:hover:border-cyan-600"
       }`}
     >
       <div className="flex gap-4">
         {/* Score */}
         <div className="flex-shrink-0 flex flex-col items-center justify-center w-12">
-          <svg className="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-4 h-4 text-cyan-500" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
           </svg>
           <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
@@ -55,14 +55,14 @@ export function RedditCard({ item, isRead, onRead, isInVault, onSaveToVault }: R
         {/* Content */}
         <div className="flex-1 min-w-0">
           <h3
-            className={`font-semibold line-clamp-2 mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors ${
+            className={`font-semibold line-clamp-2 mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors ${
               isRead ? "text-slate-500 dark:text-slate-400" : "text-slate-900 dark:text-slate-50"
             }`}
           >
             {item.title}
           </h3>
           <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <span className="text-orange-600 dark:text-orange-400 font-medium">
+            <span className="text-cyan-600 dark:text-cyan-400 font-medium">
               {item.subreddit}
             </span>
             <span>·</span>
