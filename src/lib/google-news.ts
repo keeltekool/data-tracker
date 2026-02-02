@@ -76,14 +76,23 @@ function parseRSSFeed(xml: string): NewsItem[] {
     }
 
     if (title && link) {
-      items.push({
-        id: generateId(link),
-        title: decodeHtmlEntities(title),
-        source: source || extractDomain(link),
-        url: link,
-        publishedAt: pubDate || new Date().toISOString(),
-        thumbnail: thumbnail || undefined,
-      });
+      const publishedAt = pubDate || new Date().toISOString();
+
+      // Only include articles from the last 24 hours
+      const articleDate = new Date(publishedAt);
+      const now = new Date();
+      const hoursDiff = (now.getTime() - articleDate.getTime()) / (1000 * 60 * 60);
+
+      if (hoursDiff <= 24) {
+        items.push({
+          id: generateId(link),
+          title: decodeHtmlEntities(title),
+          source: source || extractDomain(link),
+          url: link,
+          publishedAt,
+          thumbnail: thumbnail || undefined,
+        });
+      }
     }
 
     // Limit to 25 items

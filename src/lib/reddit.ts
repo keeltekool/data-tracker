@@ -54,15 +54,24 @@ function parseRedditRSS(xml: string): RedditPost[] {
     const subreddit = extractAttribute(entryXml, "category", "term") || "reddit";
 
     if (title && link) {
-      posts.push({
-        id: id || generateId(link),
-        title: decodeHtmlEntities(title),
-        subreddit: subreddit.startsWith("r/") ? subreddit : `r/${subreddit}`,
-        score: 0, // RSS doesn't include score
-        url: link,
-        createdAt: updated || new Date().toISOString(),
-        commentsCount: 0, // RSS doesn't include comment count
-      });
+      const createdAt = updated || new Date().toISOString();
+
+      // Only include posts from the last 24 hours
+      const postDate = new Date(createdAt);
+      const now = new Date();
+      const hoursDiff = (now.getTime() - postDate.getTime()) / (1000 * 60 * 60);
+
+      if (hoursDiff <= 24) {
+        posts.push({
+          id: id || generateId(link),
+          title: decodeHtmlEntities(title),
+          subreddit: subreddit.startsWith("r/") ? subreddit : `r/${subreddit}`,
+          score: 0, // RSS doesn't include score
+          url: link,
+          createdAt,
+          commentsCount: 0, // RSS doesn't include comment count
+        });
+      }
     }
 
     if (posts.length >= 25) break;
