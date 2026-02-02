@@ -48,16 +48,30 @@ function parseRSSFeed(xml: string): NewsItem[] {
     const pubDate = extractTag(itemXml, "pubDate");
     const source = extractTag(itemXml, "source");
 
-    // Try to extract thumbnail from media:content or enclosure
+    // Try to extract thumbnail from various sources
     let thumbnail = extractAttribute(itemXml, "media:content", "url");
+    if (!thumbnail) {
+      thumbnail = extractAttribute(itemXml, "media:thumbnail", "url");
+    }
     if (!thumbnail) {
       thumbnail = extractAttribute(itemXml, "enclosure", "url");
     }
-    // Also try to extract from description if it contains an img tag
+    // Extract from description HTML which often contains img tags
     if (!thumbnail) {
-      const descMatch = itemXml.match(/<img[^>]+src="([^"]+)"/);
-      if (descMatch) {
-        thumbnail = descMatch[1];
+      const description = extractTag(itemXml, "description") || "";
+      // Try various img src patterns
+      const imgPatterns = [
+        /src="(https:\/\/[^"]+\.(jpg|jpeg|png|webp|gif)[^"]*)"/i,
+        /src="(https:\/\/lh3\.googleusercontent\.com[^"]*)"/i,
+        /src="(https:\/\/news\.google\.com\/api\/attachments[^"]*)"/i,
+        /<img[^>]+src="([^"]+)"/i,
+      ];
+      for (const pattern of imgPatterns) {
+        const match = description.match(pattern);
+        if (match) {
+          thumbnail = decodeHtmlEntities(match[1]);
+          break;
+        }
       }
     }
 

@@ -1,77 +1,118 @@
 import { RedditPost } from "@/types";
 
 /**
- * Fetch Reddit posts for a keyword using public JSON API
- * URL: https://www.reddit.com/search.json?q={keyword}&sort=new&limit=25
+ * Fetch Reddit posts for a keyword using public RSS feed
+ * RSS is often less restricted than JSON API on cloud servers
+ * URL: https://www.reddit.com/search.rss?q={keyword}&sort=new&limit=25
  */
 export async function fetchRedditPosts(keyword: string): Promise<RedditPost[]> {
   const encodedKeyword = encodeURIComponent(keyword);
-  const apiUrl = `https://www.reddit.com/search.json?q=${encodedKeyword}&sort=new&limit=25`;
+  const rssUrl = `https://www.reddit.com/search.rss?q=${encodedKeyword}&sort=new&limit=25`;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(rssUrl, {
       signal: controller.signal,
       headers: {
-        // Reddit requires a browser-like User-Agent from cloud servers
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "application/json",
+        "Accept": "application/rss+xml, application/xml, text/xml",
       },
     });
 
     if (!response.ok) {
-      throw new Error(`Reddit API failed: ${response.status}`);
+      throw new Error(`Reddit RSS failed: ${response.status}`);
     }
 
-    const data = await response.json();
-    return parseRedditResponse(data);
+    const xml = await response.text();
+    return parseRedditRSS(xml);
   } finally {
     clearTimeout(timeout);
   }
 }
 
 /**
- * Parse Reddit JSON response and extract posts
+ * Parse Reddit RSS feed (Atom format) and extract posts
  */
-function parseRedditResponse(data: RedditAPIResponse): RedditPost[] {
-  if (!data?.data?.children) {
-    return [];
+function parseRedditRSS(xml: string): RedditPost[] {
+  const posts: RedditPost[] = [];
+
+  // Reddit RSS uses Atom format with <entry> elements
+  const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
+  let match;
+
+  while ((match = entryRegex.exec(xml)) !== null) {
+    const entryXml = match[1];
+
+    const title = extractTag(entryXml, "title");
+    const link = extractAttribute(entryXml, "link", "href");
+    const updated = extractTag(entryXml, "updated");
+    const id = extractTag(entryXml, "id");
+
+    // Extract subreddit from category term
+    const subreddit = extractAttribute(entryXml, "category", "term") || "reddit";
+
+    if (title && link) {
+      posts.push({
+        id: id || generateId(link),
+        title: decodeHtmlEntities(title),
+        subreddit: subreddit.startsWith("r/") ? subreddit : `r/${subreddit}`,
+        score: 0, // RSS doesn't include score
+        url: link,
+        createdAt: updated || new Date().toISOString(),
+        commentsCount: 0, // RSS doesn't include comment count
+      });
+    }
+
+    if (posts.length >= 25) break;
   }
 
-  return data.data.children
-    .filter((child) => child.kind === "t3") // t3 = link/post
-    .map((child) => {
-      const post = child.data;
-      return {
-        id: post.id,
-        title: post.title,
-        subreddit: post.subreddit_name_prefixed || `r/${post.subreddit}`,
-        score: post.score,
-        url: `https://reddit.com${post.permalink}`,
-        createdAt: new Date(post.created_utc * 1000).toISOString(),
-        commentsCount: post.num_comments,
-      };
-    })
-    .slice(0, 25);
+  return posts;
 }
 
-// Reddit API response types
-interface RedditAPIResponse {
-  data: {
-    children: Array<{
-      kind: string;
-      data: {
-        id: string;
-        title: string;
-        subreddit: string;
-        subreddit_name_prefixed: string;
-        score: number;
-        permalink: string;
-        created_utc: number;
-        num_comments: number;
-      };
-    }>;
-  };
+/**
+ * Extract content between XML tags
+ */
+function extractTag(xml: string, tag: string): string | null {
+  // Handle CDATA sections
+  const cdataRegex = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>`, "i");
+  const cdataMatch = xml.match(cdataRegex);
+  if (cdataMatch) {
+    return cdataMatch[1].trim();
+  }
+
+  // Handle regular content
+  const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i");
+  const match = xml.match(regex);
+  return match ? match[1].trim() : null;
+}
+
+/**
+ * Extract attribute from tag
+ */
+function extractAttribute(xml: string, tag: string, attr: string): string | null {
+  const regex = new RegExp(`<${tag}[^>]+${attr}="([^"]+)"`, "i");
+  const match = xml.match(regex);
+  return match ? match[1] : null;
+}
+
+/**
+ * Decode HTML entities
+ */
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'");
+}
+
+/**
+ * Generate a simple ID from URL
+ */
+function generateId(url: string): string {
+  return Buffer.from(url).toString("base64").slice(0, 20);
 }
