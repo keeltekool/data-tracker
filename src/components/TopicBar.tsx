@@ -166,7 +166,7 @@ export function TopicBar({
 
             {/* Edit/Delete buttons on hover */}
             {selectedTopicId === topic.id && editingId !== topic.id && (
-              <div className="absolute -right-1 -top-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute -right-1 -top-1 flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
