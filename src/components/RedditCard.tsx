@@ -78,13 +78,13 @@ export function RedditCard({ item, isRead, onRead, isInVault, onSaveToVault }: R
             <button
               onClick={handleSave}
               className={`p-1.5 rounded-lg transition-colors ${
-                isInVault
+                isInVault === true
                   ? "text-amber-500 bg-amber-50 dark:bg-amber-900/30"
                   : "text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/30 sm:invisible sm:group-hover:visible"
               }`}
-              title={isInVault ? "Saved to Vault" : "Save to Vault"}
+              title={isInVault === true ? "Saved to Vault" : "Save to Vault"}
             >
-              <svg className="w-5 h-5" fill={isInVault ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-5 h-5" fill={isInVault === true ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
             </button>
