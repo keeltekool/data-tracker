@@ -36,10 +36,10 @@ export default function Home() {
 
   // Fetch data when selected topic changes
   useEffect(() => {
-    if (selectedTopic) {
+    if (selectedTopic?.keyword) {
       fetchData(selectedTopic.keyword);
     }
-  }, [selectedTopicId, selectedTopic?.keyword]);
+  }, [selectedTopic?.keyword]);
 
   const fetchTopics = async () => {
     try {
@@ -309,32 +309,32 @@ export default function Home() {
           <ErrorMessage message={error} onRetry={handleRefresh} />
         ) : (
           <div className="space-y-3">
-            {activeTab === "news" ? (
-              newsItems.length > 0 ? (
-                newsItems.map((item) => (
-                  <NewsCard
-                    key={item.id}
-                    item={item}
-                    isRead={isRead(item.id)}
-                    onRead={markAsRead}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                  <p>No news found for &quot;{selectedTopic?.keyword}&quot;</p>
-                  <p className="text-sm mt-2">Try a different search term or check back later.</p>
-                </div>
-              )
-            ) : redditPosts.length > 0 ? (
-              redditPosts.map((item) => (
-                <RedditCard
-                  key={item.id}
-                  item={item}
-                  isRead={isRead(item.id)}
-                  onRead={markAsRead}
-                />
-              ))
-            ) : (
+            {/* News Tab Content */}
+            {activeTab === "news" && newsItems.length > 0 && newsItems.map((item) => (
+              <NewsCard
+                key={item.id}
+                item={item}
+                isRead={isRead(item.id)}
+                onRead={markAsRead}
+              />
+            ))}
+            {activeTab === "news" && newsItems.length === 0 && (
+              <div className="text-center py-12 text-slate-500 dark:text-slate-400">
+                <p>No news found for &quot;{selectedTopic?.keyword}&quot;</p>
+                <p className="text-sm mt-2">Try a different search term or check back later.</p>
+              </div>
+            )}
+
+            {/* Reddit Tab Content */}
+            {activeTab === "reddit" && redditPosts.length > 0 && redditPosts.map((item) => (
+              <RedditCard
+                key={item.id}
+                item={item}
+                isRead={isRead(item.id)}
+                onRead={markAsRead}
+              />
+            ))}
+            {activeTab === "reddit" && redditPosts.length === 0 && (
               <div className="text-center py-12 text-slate-500 dark:text-slate-400">
                 <p>No Reddit posts found for &quot;{selectedTopic?.keyword}&quot;</p>
                 <p className="text-sm mt-2">Try a different search term or check back later.</p>
