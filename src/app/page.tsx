@@ -173,8 +173,27 @@ export default function Home() {
     setSelectedTopicId(id);
   };
 
+  // Show loading state while fetching topics
+  if (topicsLoading) {
+    return (
+      <main className="min-h-screen">
+        <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50">
+              Data-Tracker
+            </h1>
+            <ThemeToggle />
+          </div>
+        </header>
+        <div className="flex justify-center py-20">
+          <Spinner />
+        </div>
+      </main>
+    );
+  }
+
   // Show empty state if no topics
-  if (!topicsLoading && topics.length === 0) {
+  if (topics.length === 0) {
     return (
       <main className="min-h-screen">
         <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
