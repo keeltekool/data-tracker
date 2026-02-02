@@ -4,7 +4,7 @@ import { NewsItem } from "@/types";
  * Fetch and parse Google News RSS feed for a keyword
  * RSS URL: https://news.google.com/rss/search?q={keyword}&hl=en
  */
-export async function fetchGoogleNewsRSS(keyword: string): Promise<NewsItem[]> {
+export async function fetchGoogleNewsRSS(keyword: string, maxHours: number = 24): Promise<NewsItem[]> {
   const encodedKeyword = encodeURIComponent(keyword);
   const rssUrl = `https://news.google.com/rss/search?q=${encodedKeyword}&hl=en`;
 
@@ -24,7 +24,7 @@ export async function fetchGoogleNewsRSS(keyword: string): Promise<NewsItem[]> {
     }
 
     const xml = await response.text();
-    return parseRSSFeed(xml);
+    return parseRSSFeed(xml, maxHours);
   } finally {
     clearTimeout(timeout);
   }
@@ -33,7 +33,7 @@ export async function fetchGoogleNewsRSS(keyword: string): Promise<NewsItem[]> {
 /**
  * Parse RSS XML and extract news items
  */
-function parseRSSFeed(xml: string): NewsItem[] {
+function parseRSSFeed(xml: string, maxHours: number = 24): NewsItem[] {
   const items: NewsItem[] = [];
 
   // Extract all <item> elements using regex (works in Node.js without DOM parser)
@@ -78,12 +78,12 @@ function parseRSSFeed(xml: string): NewsItem[] {
     if (title && link) {
       const publishedAt = pubDate || new Date().toISOString();
 
-      // Only include articles from the last 24 hours
+      // Only include articles within the time filter
       const articleDate = new Date(publishedAt);
       const now = new Date();
       const hoursDiff = (now.getTime() - articleDate.getTime()) / (1000 * 60 * 60);
 
-      if (hoursDiff <= 24) {
+      if (hoursDiff <= maxHours) {
         items.push({
           id: generateId(link),
           title: decodeHtmlEntities(title),

@@ -12,6 +12,7 @@ import { ErrorMessage } from "@/components/ErrorMessage";
 import { EmptyState } from "@/components/EmptyState";
 
 type Tab = "news" | "reddit";
+type TimeFilter = 2 | 6 | 24 | 48;
 
 export default function Home() {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -20,6 +21,10 @@ export default function Home() {
     null
   );
   const [activeTab, setActiveTab] = useState<Tab>("news");
+  const [timeFilter, setTimeFilter] = useLocalStorage<TimeFilter>(
+    "data-tracker-time-filter",
+    24
+  );
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [redditPosts, setRedditPosts] = useState<RedditPost[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,12 +39,12 @@ export default function Home() {
     fetchTopics();
   }, []);
 
-  // Fetch data when selected topic changes
+  // Fetch data when selected topic or time filter changes
   useEffect(() => {
     if (selectedTopic?.keyword) {
-      fetchData(selectedTopic.keyword);
+      fetchData(selectedTopic.keyword, timeFilter);
     }
-  }, [selectedTopic?.keyword]);
+  }, [selectedTopic?.keyword, timeFilter]);
 
   const fetchTopics = async () => {
     try {
@@ -61,14 +66,14 @@ export default function Home() {
     }
   };
 
-  const fetchData = useCallback(async (keyword: string) => {
+  const fetchData = useCallback(async (keyword: string, hours: number = 24) => {
     setIsLoading(true);
     setError(null);
 
     try {
       const [newsRes, redditRes] = await Promise.all([
-        fetch(`/api/news?topic=${encodeURIComponent(keyword)}`),
-        fetch(`/api/reddit?topic=${encodeURIComponent(keyword)}`),
+        fetch(`/api/news?topic=${encodeURIComponent(keyword)}&hours=${hours}`),
+        fetch(`/api/reddit?topic=${encodeURIComponent(keyword)}&hours=${hours}`),
       ]);
 
       const newsData = await newsRes.json();
@@ -97,7 +102,7 @@ export default function Home() {
 
   const handleRefresh = () => {
     if (selectedTopic) {
-      fetchData(selectedTopic.keyword);
+      fetchData(selectedTopic.keyword, timeFilter);
     }
   };
 
@@ -270,34 +275,53 @@ export default function Home() {
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex gap-1 border-b border-slate-200 dark:border-slate-800 mb-6">
-          <button
-            onClick={() => setActiveTab("news")}
-            className={`px-4 py-2 font-medium transition-colors relative ${
-              activeTab === "news"
-                ? "text-blue-600 dark:text-blue-400"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-            }`}
-          >
-            News
-            {activeTab === "news" && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("reddit")}
-            className={`px-4 py-2 font-medium transition-colors relative ${
-              activeTab === "reddit"
-                ? "text-orange-600 dark:text-orange-400"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-            }`}
-          >
-            Reddit
-            {activeTab === "reddit" && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600 dark:bg-orange-400" />
-            )}
-          </button>
+        {/* Tabs and Time Filter */}
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 mb-6">
+          <div className="flex gap-1">
+            <button
+              onClick={() => setActiveTab("news")}
+              className={`px-4 py-2 font-medium transition-colors relative ${
+                activeTab === "news"
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              News
+              {activeTab === "news" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab("reddit")}
+              className={`px-4 py-2 font-medium transition-colors relative ${
+                activeTab === "reddit"
+                  ? "text-orange-600 dark:text-orange-400"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              Reddit
+              {activeTab === "reddit" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600 dark:bg-orange-400" />
+              )}
+            </button>
+          </div>
+
+          {/* Time Filter */}
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+            {([2, 6, 24, 48] as TimeFilter[]).map((hours) => (
+              <button
+                key={hours}
+                onClick={() => setTimeFilter(hours)}
+                className={`px-3 py-1 text-sm font-medium rounded-md transition-all ${
+                  timeFilter === hours
+                    ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+              >
+                {hours}h
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Content */}

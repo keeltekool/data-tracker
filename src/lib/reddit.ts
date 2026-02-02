@@ -5,7 +5,7 @@ import { RedditPost } from "@/types";
  * RSS is often less restricted than JSON API on cloud servers
  * URL: https://www.reddit.com/search.rss?q={keyword}&sort=new&limit=25
  */
-export async function fetchRedditPosts(keyword: string): Promise<RedditPost[]> {
+export async function fetchRedditPosts(keyword: string, maxHours: number = 24): Promise<RedditPost[]> {
   const encodedKeyword = encodeURIComponent(keyword);
   const rssUrl = `https://www.reddit.com/search.rss?q=${encodedKeyword}&sort=new&limit=25`;
 
@@ -26,7 +26,7 @@ export async function fetchRedditPosts(keyword: string): Promise<RedditPost[]> {
     }
 
     const xml = await response.text();
-    return parseRedditRSS(xml);
+    return parseRedditRSS(xml, maxHours);
   } finally {
     clearTimeout(timeout);
   }
@@ -35,7 +35,7 @@ export async function fetchRedditPosts(keyword: string): Promise<RedditPost[]> {
 /**
  * Parse Reddit RSS feed (Atom format) and extract posts
  */
-function parseRedditRSS(xml: string): RedditPost[] {
+function parseRedditRSS(xml: string, maxHours: number = 24): RedditPost[] {
   const posts: RedditPost[] = [];
 
   // Reddit RSS uses Atom format with <entry> elements
@@ -56,12 +56,12 @@ function parseRedditRSS(xml: string): RedditPost[] {
     if (title && link) {
       const createdAt = updated || new Date().toISOString();
 
-      // Only include posts from the last 24 hours
+      // Only include posts within the time filter
       const postDate = new Date(createdAt);
       const now = new Date();
       const hoursDiff = (now.getTime() - postDate.getTime()) / (1000 * 60 * 60);
 
-      if (hoursDiff <= 24) {
+      if (hoursDiff <= maxHours) {
         posts.push({
           id: id || generateId(link),
           title: decodeHtmlEntities(title),

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchGoogleNewsRSS } from "@/lib/google-news";
 
-// GET /api/news?topic={keyword} - Fetch Google News RSS feed for a topic
+// GET /api/news?topic={keyword}&hours={hours} - Fetch Google News RSS feed for a topic
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const topic = searchParams.get("topic");
+    const hours = parseInt(searchParams.get("hours") || "24", 10);
 
     if (!topic) {
       return NextResponse.json(
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const items = await fetchGoogleNewsRSS(topic);
+    const items = await fetchGoogleNewsRSS(topic, hours);
 
     return NextResponse.json({ items });
   } catch (error) {
