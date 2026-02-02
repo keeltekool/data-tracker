@@ -126,7 +126,7 @@ export function TopicBar({
 
         {/* Topic chips */}
         {topics.map((topic) => (
-          <div key={topic.id} className="relative group">
+          <div key={topic.id} className="flex items-center gap-1">
             {editingId === topic.id ? (
               <form onSubmit={(e) => handleEditSubmit(e, topic.id)} className="flex items-center gap-2">
                 <input
@@ -172,7 +172,7 @@ export function TopicBar({
                     e.stopPropagation();
                     startEditing(topic);
                   }}
-                  className="ml-1 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-200 dark:bg-slate-700 rounded hover:bg-slate-300 dark:hover:bg-slate-600"
+                  className="px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-200 dark:bg-slate-700 rounded hover:bg-slate-300 dark:hover:bg-slate-600"
                 >
                   Edit
                 </button>
