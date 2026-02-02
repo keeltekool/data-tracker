@@ -12,7 +12,7 @@ import { Spinner } from "@/components/Spinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { EmptyState } from "@/components/EmptyState";
 
-type Tab = "news" | "reddit" | "vault";
+type Tab = "news" | "reddit";
 type TimeFilter = 2 | 6 | 24 | 48;
 
 export default function Home() {
@@ -22,6 +22,7 @@ export default function Home() {
     null
   );
   const [activeTab, setActiveTab] = useState<Tab>("news");
+  const [showVault, setShowVault] = useState(false);
   const [timeFilter, setTimeFilter] = useLocalStorage<TimeFilter>(
     "data-tracker-time-filter",
     24
@@ -229,25 +230,45 @@ export default function Home() {
             Data-Tracker
           </h1>
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleRefresh}
-              disabled={isLoading || !selectedTopic}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-            >
-              <svg
-                className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            {!showVault && (
+              <button
+                onClick={handleRefresh}
+                disabled={isLoading || !selectedTopic}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
+                <svg
+                  className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                Refresh
+              </button>
+            )}
+            <button
+              onClick={() => setShowVault(!showVault)}
+              className={`relative p-2 rounded-lg transition-all ${
+                showVault
+                  ? "bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400"
+                  : "text-slate-500 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+              }`}
+              title={showVault ? "Back to Feeds" : "Open Vault"}
+            >
+              <svg className="w-5 h-5" fill={showVault ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
-              Refresh
+              {vaultItems.length > 0 && !showVault && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {vaultItems.length > 9 ? "9+" : vaultItems.length}
+                </span>
+              )}
             </button>
             <ThemeToggle />
           </div>
@@ -255,98 +276,127 @@ export default function Home() {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
-        {/* Topic Bar */}
-        <TopicBar
-          topics={topics}
-          selectedTopicId={selectedTopicId}
-          onSelect={handleSelectTopic}
-          onAdd={handleAddTopic}
-          onEdit={handleEditTopic}
-          onDelete={handleDeleteTopic}
-        />
+        {/* Vault View */}
+        {showVault ? (
+          <>
+            <div className="mb-6">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg">
+                  <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50">Vault</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {vaultItems.length} saved {vaultItems.length === 1 ? "article" : "articles"}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-        {/* Selected Topic Info */}
-        {selectedTopic && (
-          <div className="mt-6 mb-4">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Showing results for:{" "}
-              <span className="font-semibold text-slate-900 dark:text-slate-50">
-                {selectedTopic.keyword}
-              </span>
-            </p>
-          </div>
-        )}
+            <div className="space-y-3">
+              {vaultItems.length > 0 ? (
+                vaultItems.map((item) => (
+                  <VaultCard
+                    key={item.id}
+                    item={item}
+                    onRemove={() => removeFromVault(item.id)}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-16 text-slate-500 dark:text-slate-400">
+                  <div className="flex justify-center mb-4">
+                    <svg className="w-20 h-20 text-slate-200 dark:text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                  </div>
+                  <p className="font-medium text-lg text-slate-700 dark:text-slate-300">Your Vault is empty</p>
+                  <p className="text-sm mt-2 max-w-sm mx-auto">
+                    Save articles from News or Reddit by clicking the bookmark icon on any card.
+                  </p>
+                  <button
+                    onClick={() => setShowVault(false)}
+                    className="mt-6 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    Browse Feeds
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Topic Bar */}
+            <TopicBar
+              topics={topics}
+              selectedTopicId={selectedTopicId}
+              onSelect={handleSelectTopic}
+              onAdd={handleAddTopic}
+              onEdit={handleEditTopic}
+              onDelete={handleDeleteTopic}
+            />
 
-        {/* Tabs and Time Filter */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 mb-6">
-          <div className="flex gap-1">
-            <button
-              onClick={() => setActiveTab("news")}
-              className={`px-4 py-2 font-medium transition-colors relative ${
-                activeTab === "news"
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-            >
-              News
-              {activeTab === "news" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("reddit")}
-              className={`px-4 py-2 font-medium transition-colors relative ${
-                activeTab === "reddit"
-                  ? "text-orange-600 dark:text-orange-400"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-            >
-              Reddit
-              {activeTab === "reddit" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600 dark:bg-orange-400" />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("vault")}
-              className={`px-4 py-2 font-medium transition-colors relative ${
-                activeTab === "vault"
-                  ? "text-amber-600 dark:text-amber-400"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-            >
-              Vault
-              {vaultItems.length > 0 && (
-                <span className={`ml-1.5 px-1.5 py-0.5 text-xs rounded-full ${
-                  activeTab === "vault"
-                    ? "bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-                }`}>
-                  {vaultItems.length}
-                </span>
-              )}
-              {activeTab === "vault" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-600 dark:bg-amber-400" />
-              )}
-            </button>
-          </div>
+            {/* Selected Topic Info */}
+            {selectedTopic && (
+              <div className="mt-6 mb-4">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Showing results for:{" "}
+                  <span className="font-semibold text-slate-900 dark:text-slate-50">
+                    {selectedTopic.keyword}
+                  </span>
+                </p>
+              </div>
+            )}
 
-          {/* Time Filter */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-            {([2, 6, 24, 48] as TimeFilter[]).map((hours) => (
-              <button
-                key={hours}
-                onClick={() => setTimeFilter(hours)}
-                className={`px-3 py-1 text-sm font-medium rounded-md transition-all ${
-                  timeFilter === hours
-                    ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 shadow-sm"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-                }`}
-              >
-                {hours}h
-              </button>
-            ))}
-          </div>
-        </div>
+            {/* Tabs and Time Filter */}
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 mb-6">
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setActiveTab("news")}
+                  className={`px-4 py-2 font-medium transition-colors relative ${
+                    activeTab === "news"
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  }`}
+                >
+                  News
+                  {activeTab === "news" && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab("reddit")}
+                  className={`px-4 py-2 font-medium transition-colors relative ${
+                    activeTab === "reddit"
+                      ? "text-orange-600 dark:text-orange-400"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  }`}
+                >
+                  Reddit
+                  {activeTab === "reddit" && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600 dark:bg-orange-400" />
+                  )}
+                </button>
+              </div>
+
+              {/* Time Filter */}
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                {([2, 6, 24, 48] as TimeFilter[]).map((hours) => (
+                  <button
+                    key={hours}
+                    onClick={() => setTimeFilter(hours)}
+                    className={`px-3 py-1 text-sm font-medium rounded-md transition-all ${
+                      timeFilter === hours
+                        ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                    }`}
+                  >
+                    {hours}h
+                  </button>
+                ))}
+              </div>
+            </div>
 
         {/* Content */}
         {isLoading ? (
@@ -406,27 +456,9 @@ export default function Home() {
                 <p className="text-sm mt-2">Try a different search term or check back later.</p>
               </div>
             )}
-
-            {/* Vault Tab Content */}
-            {activeTab === "vault" && vaultItems.length > 0 && vaultItems.map((item) => (
-              <VaultCard
-                key={item.id}
-                item={item}
-                onRemove={() => removeFromVault(item.id)}
-              />
-            ))}
-            {activeTab === "vault" && vaultItems.length === 0 && (
-              <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                <div className="flex justify-center mb-4">
-                  <svg className="w-16 h-16 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                  </svg>
-                </div>
-                <p className="font-medium text-slate-700 dark:text-slate-300">Your Vault is empty</p>
-                <p className="text-sm mt-2">Save articles from News or Reddit tabs by clicking the bookmark icon.</p>
-              </div>
-            )}
           </div>
+        )}
+          </>
         )}
       </div>
     </main>
