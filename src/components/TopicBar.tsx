@@ -164,34 +164,28 @@ export function TopicBar({
               </button>
             )}
 
-            {/* Edit/Delete buttons on hover */}
+            {/* Edit/Delete buttons - shown inline when selected */}
             {selectedTopicId === topic.id && editingId !== topic.id && (
-              <div className="absolute -right-1 -top-1 flex gap-1">
+              <>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     startEditing(topic);
                   }}
-                  className="p-1 bg-white dark:bg-slate-800 rounded-full shadow-md hover:bg-slate-100 dark:hover:bg-slate-700"
-                  title="Edit"
+                  className="ml-1 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-200 dark:bg-slate-700 rounded hover:bg-slate-300 dark:hover:bg-slate-600"
                 >
-                  <svg className="w-3 h-3 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
+                  Edit
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDelete(topic.id);
                   }}
-                  className="p-1 bg-white dark:bg-slate-800 rounded-full shadow-md hover:bg-red-100 dark:hover:bg-red-900/30"
-                  title="Delete"
+                  className="px-2 py-1 text-xs font-medium text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 rounded hover:bg-red-200 dark:hover:bg-red-900/50"
                 >
-                  <svg className="w-3 h-3 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  Delete
                 </button>
-              </div>
+              </>
             )}
           </div>
         ))}
