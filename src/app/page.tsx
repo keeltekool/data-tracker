@@ -2,16 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Topic, NewsItem, RedditPost } from "@/types";
-import { useLocalStorage, useReadStates } from "@/hooks/useLocalStorage";
+import { useLocalStorage, useReadStates, useVault } from "@/hooks/useLocalStorage";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TopicBar } from "@/components/TopicBar";
 import { NewsCard } from "@/components/NewsCard";
 import { RedditCard } from "@/components/RedditCard";
+import { VaultCard } from "@/components/VaultCard";
 import { Spinner } from "@/components/Spinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { EmptyState } from "@/components/EmptyState";
 
-type Tab = "news" | "reddit";
+type Tab = "news" | "reddit" | "vault";
 type TimeFilter = 2 | 6 | 24 | 48;
 
 export default function Home() {
@@ -31,6 +32,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [topicsLoading, setTopicsLoading] = useState(true);
   const { markAsRead, isRead } = useReadStates();
+  const { vaultItems, saveToVault, removeFromVault, isInVault } = useVault();
 
   const selectedTopic = topics.find((t) => t.id === selectedTopicId);
 
@@ -304,6 +306,28 @@ export default function Home() {
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600 dark:bg-orange-400" />
               )}
             </button>
+            <button
+              onClick={() => setActiveTab("vault")}
+              className={`px-4 py-2 font-medium transition-colors relative ${
+                activeTab === "vault"
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              Vault
+              {vaultItems.length > 0 && (
+                <span className={`ml-1.5 px-1.5 py-0.5 text-xs rounded-full ${
+                  activeTab === "vault"
+                    ? "bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                }`}>
+                  {vaultItems.length}
+                </span>
+              )}
+              {activeTab === "vault" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-600 dark:bg-amber-400" />
+              )}
+            </button>
           </div>
 
           {/* Time Filter */}
@@ -340,6 +364,15 @@ export default function Home() {
                 item={item}
                 isRead={isRead(item.id)}
                 onRead={markAsRead}
+                isInVault={isInVault(item.id)}
+                onSaveToVault={() => saveToVault({
+                  id: item.id,
+                  type: "news",
+                  title: item.title,
+                  source: item.source,
+                  url: item.url,
+                  publishedAt: item.publishedAt,
+                })}
               />
             ))}
             {activeTab === "news" && newsItems.length === 0 && (
@@ -356,12 +389,41 @@ export default function Home() {
                 item={item}
                 isRead={isRead(item.id)}
                 onRead={markAsRead}
+                isInVault={isInVault(item.id)}
+                onSaveToVault={() => saveToVault({
+                  id: item.id,
+                  type: "reddit",
+                  title: item.title,
+                  source: item.subreddit,
+                  url: item.url,
+                  publishedAt: item.createdAt,
+                })}
               />
             ))}
             {activeTab === "reddit" && redditPosts.length === 0 && (
               <div className="text-center py-12 text-slate-500 dark:text-slate-400">
                 <p>No Reddit posts found for &quot;{selectedTopic?.keyword}&quot;</p>
                 <p className="text-sm mt-2">Try a different search term or check back later.</p>
+              </div>
+            )}
+
+            {/* Vault Tab Content */}
+            {activeTab === "vault" && vaultItems.length > 0 && vaultItems.map((item) => (
+              <VaultCard
+                key={item.id}
+                item={item}
+                onRemove={() => removeFromVault(item.id)}
+              />
+            ))}
+            {activeTab === "vault" && vaultItems.length === 0 && (
+              <div className="text-center py-12 text-slate-500 dark:text-slate-400">
+                <div className="flex justify-center mb-4">
+                  <svg className="w-16 h-16 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                  </svg>
+                </div>
+                <p className="font-medium text-slate-700 dark:text-slate-300">Your Vault is empty</p>
+                <p className="text-sm mt-2">Save articles from News or Reddit tabs by clicking the bookmark icon.</p>
               </div>
             )}
           </div>

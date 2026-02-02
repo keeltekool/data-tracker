@@ -7,12 +7,19 @@ interface RedditCardProps {
   item: RedditPost;
   isRead: boolean;
   onRead: (id: string) => void;
+  isInVault?: boolean;
+  onSaveToVault?: () => void;
 }
 
-export function RedditCard({ item, isRead, onRead }: RedditCardProps) {
+export function RedditCard({ item, isRead, onRead, isInVault, onSaveToVault }: RedditCardProps) {
   const handleClick = () => {
     onRead(item.id);
     window.open(item.url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleSave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSaveToVault?.();
   };
 
   const timeAgo = formatDistanceToNow(new Date(item.createdAt), { addSuffix: true });
@@ -65,11 +72,28 @@ export function RedditCard({ item, isRead, onRead }: RedditCardProps) {
           </div>
         </div>
 
-        {/* External link indicator */}
-        <div className="flex-shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
+        {/* Save & External link */}
+        <div className="flex-shrink-0 self-center flex items-center gap-2">
+          {onSaveToVault && (
+            <button
+              onClick={handleSave}
+              className={`p-1.5 rounded-lg transition-all ${
+                isInVault
+                  ? "text-amber-500 bg-amber-50 dark:bg-amber-900/30"
+                  : "text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/30 opacity-0 group-hover:opacity-100"
+              }`}
+              title={isInVault ? "Saved to Vault" : "Save to Vault"}
+            >
+              <svg className="w-5 h-5" fill={isInVault ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+            </button>
+          )}
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </div>
         </div>
       </div>
     </article>

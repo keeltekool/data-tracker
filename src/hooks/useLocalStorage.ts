@@ -58,3 +58,40 @@ export function useReadStates() {
 
   return { readIds, markAsRead, isRead };
 }
+
+// Vault item type - can be news or reddit
+export interface VaultItem {
+  id: string;
+  type: "news" | "reddit";
+  title: string;
+  source: string; // source for news, subreddit for reddit
+  url: string;
+  savedAt: string;
+  publishedAt: string;
+}
+
+// Hook for managing saved articles in the Vault
+export function useVault() {
+  const [vaultItems, setVaultItems] = useLocalStorage<VaultItem[]>("data-tracker-vault", []);
+
+  const saveToVault = (item: Omit<VaultItem, "savedAt">) => {
+    setVaultItems((prev) => {
+      // Don't add duplicates
+      if (prev.some((v) => v.id === item.id)) return prev;
+      // Add to beginning (newest first)
+      return [{ ...item, savedAt: new Date().toISOString() }, ...prev];
+    });
+  };
+
+  const removeFromVault = (id: string) => {
+    setVaultItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const isInVault = (id: string) => vaultItems.some((item) => item.id === id);
+
+  const clearVault = () => {
+    setVaultItems([]);
+  };
+
+  return { vaultItems, saveToVault, removeFromVault, isInVault, clearVault };
+}
