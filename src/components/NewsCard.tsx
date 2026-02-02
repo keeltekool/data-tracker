@@ -17,6 +17,38 @@ export function NewsCard({ item, isRead, onRead }: NewsCardProps) {
 
   const timeAgo = formatDistanceToNow(new Date(item.publishedAt), { addSuffix: true });
 
+  // Get favicon URL for the source domain
+  const getFaviconUrl = (source: string) => {
+    const domain = source.toLowerCase().replace(/\s+/g, "");
+    // Map common sources to their actual domains
+    const domainMap: Record<string, string> = {
+      "yahoofinance": "finance.yahoo.com",
+      "seekingalpha": "seekingalpha.com",
+      "bloomberg.com": "bloomberg.com",
+      "reuters": "reuters.com",
+      "cnbc": "cnbc.com",
+      "forbes": "forbes.com",
+      "benzinga": "benzinga.com",
+      "marketwatch.com": "marketwatch.com",
+      "investopedia": "investopedia.com",
+      "themotleyfool": "fool.com",
+      "barron's": "barrons.com",
+      "businessinsider": "businessinsider.com",
+      "cnn": "cnn.com",
+      "wsj": "wsj.com",
+      "tipranks": "tipranks.com",
+      "zacksinvestmentresearch": "zacks.com",
+      "barchart.com": "barchart.com",
+      "theblock": "theblock.co",
+      "coindesk": "coindesk.com",
+      "bitcoinmagazine": "bitcoinmagazine.com",
+    };
+    const mappedDomain = Object.entries(domainMap).find(([key]) =>
+      domain.includes(key.replace(/[^a-z0-9]/g, ""))
+    )?.[1] || `${source.split(" ")[0].toLowerCase().replace(/[^a-z0-9.]/g, "")}.com`;
+    return `https://www.google.com/s2/favicons?domain=${mappedDomain}&sz=64`;
+  };
+
   return (
     <article
       onClick={handleClick}
@@ -27,18 +59,18 @@ export function NewsCard({ item, isRead, onRead }: NewsCardProps) {
       }`}
     >
       <div className="flex gap-4">
-        {item.thumbnail && (
-          <div className="flex-shrink-0">
-            <img
-              src={item.thumbnail}
-              alt=""
-              className="w-24 h-24 object-cover rounded-lg"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
-              }}
-            />
-          </div>
-        )}
+        {/* Source favicon - always shown for visual consistency */}
+        <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800">
+          <img
+            src={getFaviconUrl(item.source)}
+            alt=""
+            className="w-8 h-8"
+            onError={(e) => {
+              // Hide on error
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+        </div>
         <div className="flex-1 min-w-0">
           <h3
             className={`font-semibold line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors ${
@@ -48,7 +80,7 @@ export function NewsCard({ item, isRead, onRead }: NewsCardProps) {
             {item.title}
           </h3>
           <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <span className="truncate">{item.source}</span>
+            <span className="truncate font-medium text-blue-600 dark:text-blue-400">{item.source}</span>
             <span>·</span>
             <span className="flex-shrink-0">{timeAgo}</span>
           </div>
