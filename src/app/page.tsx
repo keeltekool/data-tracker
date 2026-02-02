@@ -304,17 +304,19 @@ export default function Home() {
         {/* Vault View */}
         {showVault ? (
           <>
+            {/* Back button - prominent */}
+            <button
+              onClick={() => setShowVault(false)}
+              className="mb-4 px-4 py-2 flex items-center gap-2 text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 font-medium transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Feeds
+            </button>
+
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-2">
-                <button
-                  onClick={() => setShowVault(false)}
-                  className="p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                  title="Back to feeds"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
-                </button>
                 <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg">
                   <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
