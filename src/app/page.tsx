@@ -47,11 +47,12 @@ export default function Home() {
       const res = await fetch("/api/topics");
       if (!res.ok) throw new Error("Failed to fetch topics");
       const data = await res.json();
-      setTopics(data);
+      const topicsList = data.topics || [];
+      setTopics(topicsList);
 
       // Auto-select first topic if none selected or selected doesn't exist
-      if (data.length > 0 && (!selectedTopicId || !data.find((t: Topic) => t.id === selectedTopicId))) {
-        setSelectedTopicId(data[0].id);
+      if (topicsList.length > 0 && (!selectedTopicId || !topicsList.find((t: Topic) => t.id === selectedTopicId))) {
+        setSelectedTopicId(topicsList[0].id);
       }
     } catch (err) {
       console.error("Failed to fetch topics:", err);
@@ -108,12 +109,12 @@ export default function Home() {
         body: JSON.stringify({ keyword }),
       });
 
+      const data = await res.json();
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(data.error || "Failed to add topic");
       }
 
-      const newTopic = await res.json();
+      const newTopic = data.topic;
       setTopics((prev) => [...prev, newTopic]);
       setSelectedTopicId(newTopic.id);
     } catch (err) {
@@ -130,9 +131,10 @@ export default function Home() {
         body: JSON.stringify({ keyword }),
       });
 
-      if (!res.ok) throw new Error("Failed to update topic");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update topic");
 
-      const updated = await res.json();
+      const updated = data.topic;
       setTopics((prev) => prev.map((t) => (t.id === id ? updated : t)));
 
       // Refresh data for the updated topic
