@@ -80,7 +80,7 @@ export function RedditCard({ item, isRead, onRead, isInVault, onSaveToVault }: R
               className={`p-1.5 rounded-lg transition-colors ${
                 isInVault
                   ? "text-amber-500 bg-amber-50 dark:bg-amber-900/30"
-                  : "text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/30 invisible group-hover:visible"
+                  : "text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/30 sm:invisible sm:group-hover:visible"
               }`}
               title={isInVault ? "Saved to Vault" : "Save to Vault"}
             >
