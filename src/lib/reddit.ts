@@ -120,8 +120,14 @@ function decodeHtmlEntities(text: string): string {
 }
 
 /**
- * Generate a simple ID from URL
+ * Generate a unique ID from URL using hash
  */
 function generateId(url: string): string {
-  return Buffer.from(url).toString("base64").slice(0, 20);
+  let hash = 0;
+  for (let i = 0; i < url.length; i++) {
+    const char = url.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return `reddit-${Math.abs(hash).toString(36)}`;
 }

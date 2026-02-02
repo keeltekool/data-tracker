@@ -154,8 +154,15 @@ function decodeHtmlEntities(text: string): string {
 }
 
 /**
- * Generate a simple ID from URL
+ * Generate a unique ID from URL using hash
  */
 function generateId(url: string): string {
-  return Buffer.from(url).toString("base64").slice(0, 20);
+  // Use a simple hash to generate unique ID from full URL
+  let hash = 0;
+  for (let i = 0; i < url.length; i++) {
+    const char = url.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return `news-${Math.abs(hash).toString(36)}`;
 }
