@@ -96,10 +96,10 @@ export function NewsCard({ item, isRead, onRead, isInVault, onSaveToVault }: New
           {onSaveToVault && (
             <button
               onClick={handleSave}
-              className={`p-1.5 rounded-lg transition-all ${
+              className={`p-1.5 rounded-lg transition-colors ${
                 isInVault
                   ? "text-amber-500 bg-amber-50 dark:bg-amber-900/30"
-                  : "text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/30 opacity-0 group-hover:opacity-100"
+                  : "text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/30 invisible group-hover:visible"
               }`}
               title={isInVault ? "Saved to Vault" : "Save to Vault"}
             >
