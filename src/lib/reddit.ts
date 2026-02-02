@@ -15,8 +15,9 @@ export async function fetchRedditPosts(keyword: string): Promise<RedditPost[]> {
     const response = await fetch(apiUrl, {
       signal: controller.signal,
       headers: {
-        // User-Agent is required to avoid 429 rate limiting
-        "User-Agent": "DataTracker/1.0 (personal project)",
+        // Reddit requires a browser-like User-Agent from cloud servers
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json",
       },
     });
 
