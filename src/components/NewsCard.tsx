@@ -80,7 +80,7 @@ export function NewsCard({ item, isRead, onRead, isInVault, onSaveToVault }: New
         </div>
         <div className="flex-1 min-w-0">
           <h3
-            className={`font-semibold line-clamp-2 mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors ${
+            className={`font-semibold line-clamp-4 sm:line-clamp-2 mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors ${
               isRead ? "text-slate-500 dark:text-slate-400" : "text-slate-900 dark:text-slate-50"
             }`}
           >
